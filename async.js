@@ -18,26 +18,23 @@ function runParallel(jobs, parallelNum, timeout = 1000) {
         let answers = [];
         let next = 0;
         for (let i = 0; i < parallelNum; i++) {
-            next = i + parallelNum - 1;
-            startPromise(i, next);
+            startPromise(next, next++);
         }
         function startPromise(index, nextIndex) {
             let finish = function () {
-                answers[index] = arguments['0'];
+                answers[nextIndex] = arguments['0'];
                 if (answers.length === jobs.length) {
                     resolve(answers);
                 }
                 if (answers.length < jobs.length) {
-                    startPromise(nextIndex++, nextIndex++);
+                    startPromise(next, next++);
                 }
             };
-            if (typeof answers[index] !== 'string') {
-                new Promise((resolveSt, reject) => {
-                    jobs[index]().then(resolveSt, reject);
-                    setTimeout(reject, timeout, new Error('Promise timeout'));
-                }).then(finish)
-                    .catch(finish);
-            }
+            new Promise((resolveSt, reject) => {
+                jobs[index]().then(resolveSt, reject);
+                setTimeout(reject, timeout, new Error('Promise timeout'));
+            }).then(finish)
+                .catch(finish);
         }
     });
 }
