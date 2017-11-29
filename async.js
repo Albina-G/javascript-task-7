@@ -31,11 +31,11 @@ function runParallel(jobs, parallelNum, timeout = 1000) {
                     startPromise(nextIndex++, nextIndex++);
                 }
             };
-            new Promise((resolve, reject) => {
-                jobs[index]().then(resolve, reject);
+            new Promise((resolveSt, reject) => {
+                jobs[index]().then(resolveSt, reject);
                 setTimeout(reject, timeout, new Error('Promise timeout'));
             }).then(finish)
-            .catch(finish);
+                .catch(finish);
         }
     });
 }
